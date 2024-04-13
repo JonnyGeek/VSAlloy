@@ -1,33 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>VS Alloys</title>
+  <title>Alloy Selector</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="menu">
-        <div class="ingot-section">
+  <div id="params">
+    <label for="alloy-select">Choose an alloy:</label>
+    <select id="alloy-select">
+      <!-- Options will be dynamically populated -->
+    </select>
 
-            <div class="slot" id="ingot"></div>
-            
-            <div class="ingot-range">
-                <p>yoyoyo</p>
-                <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-            </div>
+    <br><br>
 
+    <table id="alloy-table" border="1">
+      <tbody id="alloy-tbody">
+        <!-- Rows will be dynamically generated here -->
+      </tbody>
+    </table>
 
-        </div>
-        <div class="outcome">
-            <div class="slot" id="slot1"></div>
-            <div class="slot" id="slot2"></div>
-            <div class="slot" id="slot3"></div>
-            <div class="slot" id="slot4"></div>
-        </div>
-    </div>
+    <script src="alloys.js"></script>
+    <script src="app.js"></script>
+  </div>
 </body>
 
 </html>
