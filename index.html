@@ -7,22 +7,39 @@
 </head>
 
 <body>
-  <div id="params">
-    <label for="alloy-select">Choose an alloy:</label>
+  <div id="alloy-select-container">
+    <label for="alloy-select" id="alloy-select-label">Choose alloy:</label>
     <select id="alloy-select">
-      <!-- Options will be dynamically populated -->
+      <!-- Table will be dynamically generated here -->
     </select>
+  </div>
 
-    <br><br>
+  <br>
 
-    <table id="alloy-table" border="1">
-      <tbody id="alloy-tbody">
-        <!-- Rows will be dynamically generated here -->
-      </tbody>
-    </table>
+  <table id="alloy-table" border="1">
+    <tbody id="alloy-tbody">
+      <!-- Table will be dynamically generated here -->
+    </tbody>
+  </table>
 
-    <script src="alloys.js"></script>
-    <script src="app.js"></script>
+  <br>
+  <table id="ingot-table" border="1">
+    <tbody id="ingot-tbody">
+      <!-- Table will be dynamically generated here -->
+    </tbody>
+  </table>
+
+  <br>
+  <table id="crucible-table" border="1">
+    <tbody id="crucible-tbody">
+      <!-- Table will be dynamically generated here -->
+    </tbody>
+  </table>
+
+
+
+  <script src="alloys.js"></script>
+  <script src="app.js"></script>
   </div>
 </body>
 
