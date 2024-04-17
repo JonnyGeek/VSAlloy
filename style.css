@@ -22,7 +22,7 @@ td {
   border: none;
 }
 
-.ml5{
+.ml5 {
   margin-left: 5px;
 }
 
@@ -56,7 +56,6 @@ main {
   padding: 0px;
   background-color: #eed0b1;
   border: solid 3px #281f17;
-
   -webkit-box-shadow: inset 0px 0px 8px 5px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: inset 0px 0px 8px 5px rgba(0, 0, 0, 0.2);
   box-shadow: inset 0px 0px 8px 5px rgba(0, 0, 0, 0.2);
@@ -72,7 +71,7 @@ main {
 
 .ingot-info {
   display: flex;
-  align-items:end;
+  align-items: end;
 }
 
 .max-ingots {
@@ -86,4 +85,11 @@ main {
 
 .bold {
   font-weight: bold;
+}
+
+@media (max-width: 767px) {
+  main {
+    transform: scale(1.5); /* Scale the entire 'main' element */
+    transform-origin:top; /* Set the transform origin to the center */
+  }
 }
