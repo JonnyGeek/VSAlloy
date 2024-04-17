@@ -86,10 +86,3 @@ main {
 .bold {
   font-weight: bold;
 }
-
-@media (max-width: 767px) {
-  main {
-    transform: scale(1.5); /* Scale the entire 'main' element */
-    transform-origin:top; /* Set the transform origin to the center */
-  }
-}
