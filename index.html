@@ -4,43 +4,45 @@
 <head>
   <title>Alloy Selector</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
-  <div id="alloy-select-container">
-    <label for="alloy-select" id="alloy-select-label">Choose alloy:</label>
-    <select id="alloy-select">
-      <!-- Table will be dynamically generated here -->
-    </select>
-  </div>
+  <main>
 
-  <br>
+    <div class="alloy-select-container">
+      <label for="alloy-select" id="alloy-select-label">Choose an alloy</label>
+      <select id="alloy-select">
+        <!-- Table will be dynamically generated here -->
+      </select>
+    </div>
 
-  <table id="alloy-table" border="1">
-    <tbody id="alloy-tbody">
-      <!-- Table will be dynamically generated here -->
-    </tbody>
-  </table>
+    <table id="alloy-table" border="1">
+      <tbody id="alloy-tbody">
+        <!-- Table will be dynamically generated here -->
+      </tbody>
+    </table>
 
-  <br>
-  <table id="ingot-table" border="1">
-    <tbody id="ingot-tbody">
-      <!-- Table will be dynamically generated here -->
-    </tbody>
-  </table>
+    <table id="ingot-table" border="1">
+      <tbody id="ingot-tbody">
+        <!-- Table will be dynamically generated here -->
+      </tbody>
+    </table>
 
-  <br>
-  <table id="crucible-table" border="1">
-    <tbody id="crucible-tbody">
-      <!-- Table will be dynamically generated here -->
-    </tbody>
-  </table>
+    <table id="crucible-table" border="1">
+      <tbody id="crucible-tbody">
+        <!-- Table will be dynamically generated here -->
+      </tbody>
+    </table>
 
+    <script src="alloys.js"></script>
+    <script src="app.js"></script>
 
-
-  <script src="alloys.js"></script>
-  <script src="app.js"></script>
-  </div>
+  </main>
 </body>
 
 </html>

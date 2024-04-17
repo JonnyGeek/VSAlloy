@@ -4,30 +4,30 @@ const ingotTableBody = document.getElementById('ingot-tbody');
 
 alloys.forEach(alloy => {
   const option = document.createElement('option');
-  option.value = alloy.name;
-  option.textContent = alloy.name;
+  option.value = alloy.id;
+  option.textContent = alloy.title;
   alloySelect.appendChild(option);
 });
 
 function generateAlloyTable() {
-  const selectedAlloy = alloySelect.value;
-  const alloy = alloys.find(alloy => alloy.name === selectedAlloy);
+  const selectedAlloyId = alloySelect.value;
+  const alloy = alloys.find(alloy => alloy.id === selectedAlloyId);
 
   if (alloy) {
     let rowsHtml = '';
-    alloy.metalls.forEach((metal, index) => {
-      const initialValue = Math.round((alloy.prs[index][0] + alloy.prs[index][1]) / 2);
-      const disabledClass = index === alloy.metalls.length - 1 ? 'disabled-slider' : '';
-      const imagePath = `img/Nugget-${metal}.png`;
+    alloy.ingredients.forEach((ingredient, index) => {
+      const initialValue = Math.round((ingredient.ratio.min + ingredient.ratio.max) / 2);
+      const disabledClass = index === alloy.ingredients.length - 1 ? 'disabled-slider' : '';
+      const imagePath = `img/Nugget-${ingredient.id}.png`;
       rowsHtml += `
         <tr>
-          <td>
-            <img src="${imagePath}" alt="${metal}" class="metal-image">
+          <td class="cell-image">
+            <img src="${imagePath}" alt="${ingredient.id}" class="image-metal">
           </td>
           <td>
-            <span>${metal} - </span><span id="${metal}-percentage">${initialValue}%</span>
+            <span class="ml5">${ingredient.id} - </span><span id="${ingredient.id}-percentage" class="bold">${initialValue}%</span>
             <br>
-            <input type="range" id="${metal}-slider" class="slider ${disabledClass}" min="${alloy.prs[index][0]}" max="${alloy.prs[index][1]}" value="${initialValue}" ${index === alloy.metalls.length - 1 ? 'disabled' : ''}>
+            <input type="range" id="${ingredient.id}-slider" class="slider ${disabledClass}" min="${ingredient.ratio.min}" max="${ingredient.ratio.max}" value="${initialValue}" ${index === alloy.ingredients.length - 1 ? 'disabled' : ''}>
           </td>
         </tr>
       `;
@@ -36,51 +36,40 @@ function generateAlloyTable() {
     alloyTableBody.innerHTML = rowsHtml;
 
     // Add event listeners to the sliders
-    const slider1 = document.getElementById(`${alloy.metalls[0]}-slider`);
-    const slider2 = document.getElementById(`${alloy.metalls[1]}-slider`);
-    const slider3 = document.getElementById(`${alloy.metalls[2]}-slider`);
-    const percentage1 = document.getElementById(`${alloy.metalls[0]}-percentage`);
-    const percentage2 = document.getElementById(`${alloy.metalls[1]}-percentage`);
-    const percentage3 = document.getElementById(`${alloy.metalls[2]}-percentage`);
+    alloy.ingredients.forEach((ingredient, index) => {
+      const slider = document.getElementById(`${ingredient.id}-slider`);
+      const percentage = document.getElementById(`${ingredient.id}-percentage`);
 
-    slider1.addEventListener('input', () => {
-      const value1 = parseInt(slider1.value);
-      percentage1.textContent = `${value1}%`;
+      slider.addEventListener('input', () => {
+        const value = parseInt(slider.value);
+        percentage.textContent = `${value}%`;
 
-      if (alloy.metalls.length === 2) {
-        const value2 = 100 - value1;
-        slider2.value = value2;
-        percentage2.textContent = `${value2}%`;
-      } else {
-        const value2 = parseInt(slider2.value);
-        const value3 = 100 - value1 - value2;
-        slider3.value = value3;
-        percentage3.textContent = `${value3}%`;
-      }
-      updateIngotTable(alloy);
-    });
+        if (index < alloy.ingredients.length - 1) {
+          const remainingPercentage = 100 - alloy.ingredients.slice(0, -1).reduce((sum, ingredient) => {
+            const sliderValue = parseInt(document.getElementById(`${ingredient.id}-slider`).value);
+            return sum + sliderValue;
+          }, 0);
 
-    slider2.addEventListener('input', () => {
-      const value1 = parseInt(slider1.value);
-      const value2 = parseInt(slider2.value);
-      percentage2.textContent = `${value2}%`;
+          const lastIngredient = alloy.ingredients[alloy.ingredients.length - 1];
+          const lastSlider = document.getElementById(`${lastIngredient.id}-slider`);
+          const lastPercentage = document.getElementById(`${lastIngredient.id}-percentage`);
 
-      if (alloy.metalls.length === 3) {
-        const value3 = 100 - value1 - value2;
-        slider3.value = value3;
-        percentage3.textContent = `${value3}%`;
-      }
-      updateIngotTable(alloy);
+          lastSlider.value = remainingPercentage;
+          lastPercentage.textContent = `${remainingPercentage}%`;
+        }
+
+        updateIngotTable(alloy);
+      });
     });
 
     // Set initial values for sliders and percentages
-    const initialValues = alloy.metalls.map((_, index) => Math.round((alloy.prs[index][0] + alloy.prs[index][1]) / 2));
+    const initialValues = alloy.ingredients.map(ingredient => Math.round((ingredient.ratio.min + ingredient.ratio.max) / 2));
     const totalInitialValue = initialValues.reduce((sum, value) => sum + value, 0);
     const adjustedInitialValues = initialValues.map(value => Math.round(value * 100 / totalInitialValue));
 
-    alloy.metalls.forEach((metal, index) => {
-      const slider = document.getElementById(`${metal}-slider`);
-      const percentage = document.getElementById(`${metal}-percentage`);
+    alloy.ingredients.forEach((ingredient, index) => {
+      const slider = document.getElementById(`${ingredient.id}-slider`);
+      const percentage = document.getElementById(`${ingredient.id}-percentage`);
       slider.value = adjustedInitialValues[index];
       percentage.textContent = `${adjustedInitialValues[index]}%`;
     });
@@ -90,20 +79,22 @@ function generateAlloyTable() {
 }
 
 function generateIngotTable() {
-  const selectedAlloy = alloySelect.value;
-  const alloy = alloys.find(alloy => alloy.name === selectedAlloy);
+  const selectedAlloyId = alloySelect.value;
+  const alloy = alloys.find(alloy => alloy.id === selectedAlloyId);
 
   if (alloy) {
     const maxIngots = calculateMaxIngots(alloy);
-    const ingotImagePath = `img/Ingot-${alloy.name}.png`;
+    const ingotImagePath = `img/Ingot-${alloy.id}.png`;
     const ingotRowHtml = `
       <tr>
-        <td>
-          <img src="${ingotImagePath}" alt="${alloy.name}" class="metal-image">
+        <td class="cell-image">
+          <img src="${ingotImagePath}" alt="${alloy.title}" class="image-metal">
         </td>
         <td>
-          <span>ingots - <span id="ingot-count">1</span> (<span id="max-ingots">${maxIngots}</span> max)</span>
-          <br>
+          <span class="ingot-info ml5">
+            <span class="ingot-count">ingots - <span id="ingot-count" class="bold">1</span></span>
+            <span class="max-ingots"><span id="max-ingots">${maxIngots}</span> max</span>
+          </span>
           <input type="range" id="ingot-slider" class="slider" min="1" max="${maxIngots}" value="1">
         </td>
       </tr>
@@ -117,7 +108,7 @@ function generateIngotTable() {
 
     ingotSlider.addEventListener('input', () => {
       ingotCount.textContent = ingotSlider.value;
-      generateCrucibleTable(alloy); // Add this line to update the crucible table
+      generateCrucibleTable(alloy);
     });
   } else {
     ingotTableBody.innerHTML = '';
@@ -131,15 +122,16 @@ function generateCrucibleTable(alloy) {
   const ingotCount = ingotSlider ? parseInt(ingotSlider.value) : 1;
 
   const slots = [];
-  const metalls = [];
+  const ingredients = [];
   const nug = [];
   const ppp = ingotCount;
 
   const totalNuggets = ppp * 20;
   let remainingNuggets = totalNuggets;
 
-  for (let m = 0; m < alloy.metalls.length - 1; m++) {
-    const slider = document.getElementById(`${alloy.metalls[m]}-slider`);
+  for (let i = 0; i < alloy.ingredients.length - 1; i++) {
+    const ingredient = alloy.ingredients[i];
+    const slider = document.getElementById(`${ingredient.id}-slider`);
     const percentage = parseInt(slider.value);
     const nuggetValue = Math.floor(totalNuggets * percentage / 100);
     nug.push(nuggetValue);
@@ -149,29 +141,31 @@ function generateCrucibleTable(alloy) {
   const lastNuggetValue = remainingNuggets;
   nug.push(lastNuggetValue);
 
-  for (let n = 0; n < nug.length; n++) {
-    const step = Math.floor(nug[n] / 128);
-    let total = nug[n];
-    for (let x = 0; x < step; x++) {
+  for (let i = 0; i < nug.length; i++) {
+    const step = Math.floor(nug[i] / 128);
+    let total = nug[i];
+    for (let j = 0; j < step; j++) {
       slots.push(128);
-      metalls.push(alloy.metalls[n]);
+      ingredients.push(alloy.ingredients[i].id);
       total -= 128;
     }
     if (total !== 0 || step === 0) {
       slots.push(total);
-      metalls.push(alloy.metalls[n]);
+      ingredients.push(alloy.ingredients[i].id);
     }
   }
 
   let rowHtml = '<tr>';
   for (let i = 0; i < 4; i++) {
     if (i < slots.length) {
-      const imagePath = `img/Nugget-${metalls[i]}.png`;
+      const imagePath = `img/Nugget-${ingredients[i]}.png`;
       rowHtml += `
-        <td><img src="${imagePath}" alt="${metalls[i]}" class="metal-image"></td>
+        <td class="cell-image">
+          <img src="${imagePath}" alt="${ingredients[i]}" class="image-metal">
+        </td>
       `;
     } else {
-      rowHtml += '<td></td>';
+      rowHtml += '<td class="cell-image"></td>';
     }
   }
   rowHtml += '</tr>';
@@ -180,7 +174,7 @@ function generateCrucibleTable(alloy) {
   for (let i = 0; i < 4; i++) {
     if (i < slots.length) {
       rowHtml += `
-        <td>${slots[i]}</td>
+        <td class="bold">${slots[i]}</td>
       `;
     } else {
       rowHtml += '<td></td>';
@@ -198,14 +192,15 @@ function calculateMaxIngots(selectedAlloy) {
 
     while (!isFullCrucible) {
       const slots = [];
-      const metalls = [];
+      const ingredients = [];
       const nug = [];
       const ppp = maxIngots;
       const totalNuggets = ppp * 20;
 
       let remainingNuggets = totalNuggets;
-      for (let m = 0; m < selectedAlloy.metalls.length - 1; m++) {
-        const slider = document.getElementById(`${selectedAlloy.metalls[m]}-slider`);
+      for (let i = 0; i < selectedAlloy.ingredients.length - 1; i++) {
+        const ingredient = selectedAlloy.ingredients[i];
+        const slider = document.getElementById(`${ingredient.id}-slider`);
         const percentage = parseInt(slider.value);
         const nuggetValue = Math.floor(totalNuggets * percentage / 100);
         nug.push(nuggetValue);
@@ -214,17 +209,17 @@ function calculateMaxIngots(selectedAlloy) {
 
       const lastNuggetValue = remainingNuggets;
       nug.push(lastNuggetValue);
-      for (let n = 0; n < nug.length; n++) {
-        const step = Math.floor(nug[n] / 128);
-        let total = nug[n];
-        for (let x = 0; x < step; x++) {
+      for (let i = 0; i < nug.length; i++) {
+        const step = Math.floor(nug[i] / 128);
+        let total = nug[i];
+        for (let j = 0; j < step; j++) {
           slots.push(128);
-          metalls.push(selectedAlloy.metalls[n]);
+          ingredients.push(selectedAlloy.ingredients[i].id);
           total -= 128;
         }
         if (total !== 0 || step === 0) {
           slots.push(total);
-          metalls.push(selectedAlloy.metalls[n]);
+          ingredients.push(selectedAlloy.ingredients[i].id);
         }
       }
 
@@ -258,12 +253,11 @@ function updateIngotTable(alloy) {
   generateCrucibleTable(alloy);
 }
 
-
 function updateUI() {
   generateAlloyTable();
   generateIngotTable();
-  const selectedAlloy = alloySelect.value;
-  const alloy = alloys.find(alloy => alloy.name === selectedAlloy);
+  const selectedAlloyId = alloySelect.value;
+  const alloy = alloys.find(alloy => alloy.id === selectedAlloyId);
   generateCrucibleTable(alloy);
 }
 
