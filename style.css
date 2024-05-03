@@ -92,9 +92,22 @@ main {
   font-weight: bold;
 }
 
-.github{
+.github {
+  min-width: 326px;
   padding-top: 5px;
   color: #3f3529;
   font-weight: 300;
-  margin: auto;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  main {
+    min-width: 290px;
+    padding: 15px;
+    margin: auto;
+    margin-top: 15px;
+    display: flex;
+    background-color: #3f3529;
+    border: solid 3px #281f17;
+  } 
 }
